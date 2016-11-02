@@ -9,6 +9,8 @@ var LotsMoreMovies = require('./lots-more-movies'); // LotsMoreMovies.movies
 // Firebase
 var Rebase = require('re-base')
 var base = Rebase.createClass({
+  apiKey: "AIzaSyD3SEaqljU1DdT72tf7nEsKEWAHcgHa7Rs",
+  authDomain: "buyflix-d7037.firebaseapp.com",
   databaseURL: "https://buyflix-d7037.firebaseio.com/",
 });
 
@@ -52,6 +54,23 @@ var Movie = React.createClass({
 })
 
 var Header = React.createClass({
+  greeting: function() {
+    if (this.props.currentUser) {
+      return (
+        <span>
+          Hi {this.props.currentUser.displayName}
+          &nbsp;
+          <a href="#" className="btn btn-link" onClick={this.props.logout}>
+            <i className="fa fa-sign-out"></i>
+          </a>
+        </span>
+      )
+    } else {
+      return (
+        <a href="#" className="btn btn-link" onClick={this.props.login}>How 'bout you sign in?</a>
+      )
+    }
+  },
   render: function() {
     return (
       <div className="header row">
@@ -59,7 +78,7 @@ var Header = React.createClass({
           <h1>Buyflix</h1>
         </div>
         <div className="hello col-sm-3 text-center">
-          <h2>Hi, {this.props.name}!</h2>
+          <h2>{this.greeting()}</h2>
         </div>
       </div>
     )
@@ -128,6 +147,26 @@ var NoCurrentMovie = React.createClass({
 })
 
 var App = React.createClass({
+  authChanged: function(user) {
+    if (user) {
+      console.log(user)
+    } else {
+      console.log("Logged out")
+    }
+  },
+  loginComplete: function(error, response) {
+    if (error) {
+      console.log("Login failed")
+    } else {
+      console.log("Login succeeded")
+    }
+  },
+  login: function() {
+    base.authWithOAuthPopup('google', this.loginComplete)
+  },
+  logout: function() {
+    base.unauth()
+  },
   movieClicked: function(movie) {
     this.setState({
       currentMovie: movie
@@ -163,7 +202,8 @@ var App = React.createClass({
   getInitialState: function() {
     return {
       movies: SampleData.movies,
-      currentMovie: null
+      currentMovie: null,
+      currentUser: base.getAuth()
     }
   },
   componentDidMount: function() {
@@ -172,11 +212,12 @@ var App = React.createClass({
       state: 'movies',
       asArray: true
     })
+    base.onAuth(this.authChanged)
   },
   render: function() {
     return (
       <div>
-        <Header name="Brian" />
+        <Header currentUser={this.state.currentUser} login={this.login} logout={this.logout} />
         <SortBar movieCount={this.state.movies.length} />
         <div className="main row">
           <MovieList movies={this.state.movies} movieClicked={this.movieClicked} />

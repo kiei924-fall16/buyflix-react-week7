@@ -38,7 +38,10 @@ body {
   padding: 31px;
   color: #fff;
   font-weight: 300;
-  font-size: 26px;
+  font-size: 22px;
+}
+.hello h2 .btn-link {
+  color: #fff;
 }
 .main {
   background-color: #fff;
