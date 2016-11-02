@@ -67,7 +67,7 @@ var Header = React.createClass({
       )
     } else {
       return (
-        <a href="#" className="btn btn-link" onClick={this.props.login}>How 'bout you sign in?</a>
+        <a href="#" className="btn btn-link" onClick={this.props.login}>How about you sign in?</a>
       )
     }
   },
